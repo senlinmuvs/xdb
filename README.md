@@ -1,8 +1,7 @@
 # XDB
 # 像操作关系数据库一样操作kv数据库
 批量查改删数据工具。支持连key（类似连表），条件查询，字段选择。
-目前较粗糙但足以满足很多场景使用。
-
+目前较粗糙但足以满足很多场景使用。目前仅支持ssdb。
 ```
 sen@LAPTOP-HBHT8T39:/mnt/c/code/go/xdb$ ./xdb -x "find h:user:%d{id(0,100000011)}(id,ut)"
 id      ut
