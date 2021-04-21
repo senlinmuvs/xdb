@@ -3,7 +3,7 @@
 批量查改删数据工具。支持连key（类似连表），条件查询，字段选择。
 目前较粗糙但足以满足很多场景使用。目前仅支持ssdb。
 ```
-sen@LAPTOP-HBHT8T39:/mnt/c/code/go/xdb$ ./xdb -x "find h:user:%d{id(0,100000011)}(id,ut)"
+sen@x:/mnt/c/code/go/xdb$ ./xdb -x "find h:user:%d{id(0,100000011)}(id,ut)"
 id      ut
 100000001       1610539080041
 100000002       1610539080041
