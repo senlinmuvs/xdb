@@ -121,15 +121,7 @@ key中值占位符
 不同的key尽量保证key的前缀有区别，这样能更快查找，如：
 ```
 z:u:%d:items:bylst
-z:u:1:items:bylst
-z:u:2:items:bylst
-z:u:3:items:bylst
-...
 
 下面这个要好些
 z:u:items:%d:bylst
-z:u:items:1:bylst
-z:u:items:2:bylst
-z:u:items:3:bylst
-...
 ```
