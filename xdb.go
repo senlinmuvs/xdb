@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.0.0"
+	version = "1.0.1"
 )
 
 var (
@@ -192,11 +192,14 @@ func parseXDB(cmd string) (xdbs []*XDB, err error) {
 		if len(lines) == 0 {
 			return xdbs, nil
 		}
+		if debug {
+			fmt.Println("lines", len(lines))
+		}
 	} else {
 		lines = append(lines, cmd)
 	}
 	for _, line := range lines {
-		line = strings.Trim(line, " \n")
+		line = strings.Trim(line, " \n\r")
 		if line == "" || strings.Index(line, "#") == 0 {
 			continue
 		}
@@ -229,6 +232,9 @@ func parseXDB(cmd string) (xdbs []*XDB, err error) {
 			}
 		}
 		xdbs = append(xdbs, xdb)
+	}
+	if debug {
+		fmt.Println("cmd lines", len(xdbs))
 	}
 	return xdbs, nil
 }
