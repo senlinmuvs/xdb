@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.0.1"
+	version = "1.1.1"
 )
 
 var (
@@ -34,6 +34,7 @@ var (
 	dbMinPoolSize  int
 	dbMaxPoolSize  int
 	dbMaxWaitSize  int
+	nct            bool
 )
 
 func init() {
@@ -49,6 +50,7 @@ func init() {
 	flag.IntVar(&progressCount, "pc", 0, "遍历多少个key打印一次进度提示")
 	flag.IntVar(&batch, "ba", 100, "batch size")
 	flag.BoolVar(&debug, "X", false, "debug")
+	flag.BoolVar(&nct, "nct", false, "do not print count info")
 	flag.IntVar(&slow, "slow", 0, "slow")
 	flag.BoolVar(&unquote, "uq", false, "if unquote for value")
 	flag.BoolVar(&quote, "qu", false, "if quote for value")
@@ -274,7 +276,9 @@ func xdb(cmd string) {
 		}
 		count += c
 	}
-	fmt.Printf("xdb count: %d\n", count)
+	if !nct {
+		fmt.Printf("xdb count: %d\n", count)
+	}
 }
 
 func usage() {
