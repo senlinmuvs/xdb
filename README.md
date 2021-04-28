@@ -100,7 +100,8 @@ import file:///mnt/c/user.csv h:user:%0
 把查找到的所有h:pk:开头的hash的全部字段导出到u.csv
 (*)表示全部字段,(id,name)则表示id与name字段
 ```
-find h:pk:%d(*) > u.csv
+xdb -x "find h:pk:%d(*)" | tee u.csv
+xdb -x "find h:pk:%d(id,name)" | tee u.csv
 ```
 
 # 符号
