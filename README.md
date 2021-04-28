@@ -32,9 +32,12 @@ del maxid:pk
 
 # 常用操作
 ## find
+### find key{条件}(要显示的字段)
+### {条件}：多条件时与号&表示and关系，分号;表示or关系。暂时多条件只能同时表达一种关系。
+### (字段)：与sql相似，多字段逗号相隔，所有字段可用*表示
 ```
 #查找所有以h:pk开头的hash key，条件：hash条目cont=x并且img为空串
-find h:pk:%d{cont=x,img=}(*)
+find h:pk:%d{cont=x&img=}(*)
 
 #查找所有以h:pk:开头的hash key，条件：key上点位符%s处的值满足正则/[^\d]+/
 find h:pk:%s{%0/[^\d]+/}
@@ -111,16 +114,24 @@ xdb -x "find h:pk:%d(id,name)" -nct -qu | tee u.csv
 
 # 符号
 ## ()
-条件值区间，字段选择
+条件值区间或字段选择
 
 ## {}
 条件
 
 ## @
-引用前导hash字段
+引用前导hash字段，如前面的：
+set h:user:%d zyh:@zyh:uid,%0
+@zyh表示引用前面这个h:user:%d的字段zyh
 
 ## |
 连key操作
+
+## &
+条件and关系符
+
+## ;
+条件or关系符
 
 ## %
 key中值占位符
