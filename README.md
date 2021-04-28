@@ -93,7 +93,9 @@ del z:user:%d:pks{h:pk:@key(@id=0)}
 ## import
 user.csv数据导入h:user:%0，%0引用user.csv第一列数据
 ```
-import file:///mnt/c/user.csv h:user:%0
+xdb -x "import file:///mnt/c/user.csv h:user:%0" -uq | tee log
+
+-uq 表示去掉值的引号
 ```
 
 ## export
