@@ -161,6 +161,9 @@ a:
 		if err != nil {
 			return
 		}
+		if len(keys) == 0 {
+			break a
+		}
 		for _, listKey := range keys {
 			if progressCount > 0 && total != 0 && total%progressCount == 0 {
 				fmt.Println("INFO total", total, keyPre)
@@ -169,7 +172,9 @@ a:
 			//
 			i := strings.Index(listKey, keyPre)
 			if i != 0 {
-				// fmt.Printf("stop %s %s %s\n", keyTpl, listKey, keyPre)
+				// if debug {
+				// 	fmt.Printf("stop %s %s %s\n", keyTpl, listKey, keyPre)
+				// }
 				break a
 			}
 			if matchKey(keyTpl, listKey) {
