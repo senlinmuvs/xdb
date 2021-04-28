@@ -35,8 +35,11 @@ func Import(xdb *XDB) (count int, err error) {
 									str = arr[colIndex]
 								}
 								kvs[k] = str
+								arr[colIndex] = str
 							} else if quote {
-								kvs[k] = strconv.Quote(arr[colIndex])
+								str := strconv.Quote(arr[colIndex])
+								kvs[k] = str
+								arr[colIndex] = str
 							} else {
 								kvs[k] = arr[colIndex]
 							}
