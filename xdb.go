@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.1.4"
+	version = "1.2.4"
 )
 
 var (
@@ -90,6 +90,7 @@ type XDB struct {
 	Target      string
 	TarKey      *Key
 	CurKeyIndex int
+	Pure        bool
 }
 
 func (x *XDB) GetCurKey() *Key {
@@ -205,32 +206,37 @@ func parseXDB(cmd string) (xdbs []*XDB, err error) {
 		if line == "" || strings.Index(line, "#") == 0 {
 			continue
 		}
-		arr := strings.Split(line, " ")
 		xdb := &XDB{}
-		if len(arr) > 0 {
-			xdb.Cmd = strings.Trim(arr[0], " ")
+		if strings.Index(line, "/") == 0 {
+			xdb.Pure = true
+			xdb.Cmd = RightUnicode(line, 1)
 		} else {
-			fmt.Println("WARN no cmd", line)
-			continue
-		}
-		if len(arr) > 1 {
-			xdb.Src = strings.Trim(arr[1], " ")
-			var keys []*Key
-			keys, err = parseKeys(xdb.Src)
-			if err != nil {
-				return
+			arr := strings.Split(line, " ")
+			if len(arr) > 0 {
+				xdb.Cmd = strings.Trim(arr[0], " ")
+			} else {
+				fmt.Println("WARN no cmd", line)
+				continue
 			}
-			xdb.SrcKeys = keys
-		}
-		if len(arr) > 2 {
-			xdb.Target = strings.Trim(arr[2], " ")
-			var keys []*Key
-			keys, err = parseKeys(xdb.Target)
-			if err != nil {
-				return
+			if len(arr) > 1 {
+				xdb.Src = strings.Trim(arr[1], " ")
+				var keys []*Key
+				keys, err = parseKeys(xdb.Src)
+				if err != nil {
+					return
+				}
+				xdb.SrcKeys = keys
 			}
-			if len(keys) > 0 {
-				xdb.TarKey = keys[0]
+			if len(arr) > 2 {
+				xdb.Target = strings.Trim(arr[2], " ")
+				var keys []*Key
+				keys, err = parseKeys(xdb.Target)
+				if err != nil {
+					return
+				}
+				if len(keys) > 0 {
+					xdb.TarKey = keys[0]
+				}
 			}
 		}
 		xdbs = append(xdbs, xdb)
@@ -255,20 +261,24 @@ func xdb(cmd string) {
 		}
 		c := 0
 		cmd := strings.ToLower(xdb.Cmd)
-		if cmd == "cp" {
-			c, er = Copy(xdb)
-		} else if cmd == "find" {
-			c, er = Find(xdb)
-		} else if cmd == "del" {
-			c, er = Del(xdb)
-		} else if cmd == "set" {
-			c, er = Set(xdb)
-		} else if cmd == "hset" {
-			c, er = Hset(xdb)
-		} else if cmd == "import" {
-			c, er = Import(xdb)
+		if xdb.Pure {
+			c, er = DoPure(cmd)
 		} else {
-			fmt.Println("WARN no cmd:", xdb.Cmd, xdb.Src, xdb.Target)
+			if cmd == "cp" {
+				c, er = Copy(xdb)
+			} else if cmd == "find" {
+				c, er = Find(xdb)
+			} else if cmd == "del" {
+				c, er = Del(xdb)
+			} else if cmd == "set" {
+				c, er = Set(xdb)
+			} else if cmd == "hset" {
+				c, er = Hset(xdb)
+			} else if cmd == "import" {
+				c, er = Import(xdb)
+			} else {
+				fmt.Println("WARN no cmd:", xdb.Cmd, xdb.Src, xdb.Target)
+			}
 		}
 		if er != nil {
 			fmt.Println(xdb.Cmd+" err:", er)
