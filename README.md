@@ -116,6 +116,13 @@ xdb -x "find h:pk:%d(id,name)" -nct -qu | tee u.csv
 -qu 表示给结果加上引号
 ```
 
+## 直接执行原生命令
+/开头表示执行原生命令,-表示空参数
+```
+xdb -x "/hgetall h:user:1"
+xdb -x "/zscan z:pks - - - 10"
+```
+
 # 符号
 ### ()
 条件值区间或字段选择
