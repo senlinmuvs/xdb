@@ -32,10 +32,10 @@ del maxid:pk
 
 # 常用操作
 ## find
-### find key{条件}(要显示的字段)
-### {条件}："&"表示and，";"表示or。暂时多条件只能同时表达一种关系。
-### (字段)：多字段逗号相隔，所有字段可用*表示
-### 只有命令、源key、目标key之间有空格，key本身不能有空格
+#### find key{条件}(要显示的字段)
+#### {条件}："&"表示and，";"表示or。暂时多条件只能同时表达一种关系。
+#### (字段)：多字段逗号相隔，所有字段可用*表示
+#### 只有命令、源key、目标key之间有空格，key本身不能有空格
 ```
 #查找所有以h:pk开头的hash key，条件：hash条目cont=x并且img为空串
 find h:pk:%d{cont=x&img=}(*)
@@ -44,14 +44,14 @@ find h:pk:%d{cont=x&img=}(*)
 find h:pk:%s{%0/[^\d]+/}
 ```
 ## cp
-### cp 复制的源key  复制的目标key
+#### cp 复制的源key  复制的目标key
 ```
 先查找以h:user:开头的hash，把查找到的每条hash的hrtBid值填入后面的z:bk:@hrtBid:st:%d:pks再查找并把找到的zset数据复制到目标key中。
 目标key中%0是引用源key上第0个点位符的值，所以这里是每个h:user:%d的%d对应值，即uid。
 cp h:user:%d|z:bk:@hrtBid:st:%d:pks z:user:%0:hrtpks:by:lst
 ```
 ## set
-### set 需要查找的key   需要set的key
+#### set 需要查找的key   需要set的key
 find后修改kv
 ```
 set h:user:%d zyh:@zyh:uid,%0
@@ -64,7 +64,7 @@ set h:user:%d z:user:%0:follows:by:lst,100000010,1608707314083
 set h:user:%d{jut[1610539080041,)} z:user:by:lst,%0,1610539080041
 ```
 ## hset
-### hset 需要查找的key  需要hset的key
+#### hset 需要查找的key  需要hset的key
 find后修改hash
 ```
 #查找模板h:work:%d，然后把hash字段img用内置函数UnQuote()处理去除引号
@@ -77,6 +77,7 @@ hset h:pk:%d st=DelField()
 hset h:user:%d ut(,1)=@ct
 ```
 ## del
+#### del 要删除的目标key
 ```
 #删除所有以h:pk:开头且%s位置匹配/[^\d]+/正则的hash数据
 del h:pk:%s{%0/[^\d]+/}
@@ -95,6 +96,7 @@ del z:work:%d:tagIds
 del z:user:%d:pks{h:pk:@key(@id=0)}
 ```
 ## import
+#### import 要导入的文件路径 目标key
 user.csv数据导入h:user:%0，%0引用user.csv第一列数据
 ```
 xdb -x "import file:///mnt/c/user.csv h:user:%0" -uq | tee log
@@ -103,6 +105,7 @@ xdb -x "import file:///mnt/c/user.csv h:user:%0" -uq | tee log
 ```
 
 ## export
+#### 导出没有专门的命令，直接用find加tee命令就可导出
 把查找到的所有h:pk:开头的hash的全部字段导出到u.csv
 (*)表示全部字段,(id,name)则表示id与name字段
 ```
