@@ -7,8 +7,6 @@ import (
 )
 
 //find h:user:%d|z:bk:@hrtBid:st:%d:pks %0|key,score
-//export h:user:%d|z:bk:@hrtBid:st:%d:pks userHrtPks.cvs(%0|key,score)
-//import userHrtPks.cvs(%d,key,score) z:user:%0:hrtpks:by:lst
 func Find(xdb *XDB) (count int, err error) {
 	c, err := pool.NewClient()
 	if err != nil {
