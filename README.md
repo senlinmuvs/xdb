@@ -97,8 +97,8 @@ del z:user:%d:pks{h:pk:@key(@id=0)}
 ```
 ## import
 #### import 要导入的文件路径 目标key
-导入文件user.csv: 第一行为字段
-user.csv的数据导入h:user:%0，%0引用user.csv第一列数据
+- 导入文件user.csv: 第一行为字段
+- user.csv的数据导入h:user:%0，%0引用user.csv第一列数据
 ```
 xdb -x "import file:///mnt/c/user.csv h:user:%0" -uq | tee log
 
