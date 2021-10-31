@@ -19,10 +19,11 @@ func initSSDB0(h string, p int) (*gossdb.Connectors, error) {
 	pool, err := gossdb.NewPool(&conf.Config{
 		Host:             h,
 		Port:             p,
+		Password:         pwd,
 		MinPoolSize:      dbMinPoolSize,
 		MaxPoolSize:      dbMaxPoolSize,
 		MaxWaitSize:      dbMaxWaitSize,
-		AcquireIncrement: 5,
+		AcquireIncrement: dbAcq,
 	})
 	return pool, err
 }

@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/seefan/gossdb"
 )
 
 //find h:user:%d|z:bk:@hrtBid:st:%d:pks %0|key,score
-func Find(xdb *XDB) (count int, err error) {
+func Find(xdb *XDB) (count int, err error, res [][]string) {
 	c, err := pool.NewClient()
 	if err != nil {
 		return
@@ -40,14 +41,19 @@ func Find(xdb *XDB) (count int, err error) {
 					QuoteMap(kvs)
 				}
 				if count == 0 {
+					res = append(res, keys)
 					fmt.Println(ArrAsTableStyle(keys))
 				}
-				fmt.Println(MapAsTableStyle(keys, kvs))
+				arr := MapAsArr(keys, kvs)
+				res = append(res, arr)
+				fmt.Println(ArrAsTableStyle(arr))
 			} else {
+				res = append(res, []string{listKey, strconv.Itoa(int(size))})
 				fmt.Println(listKey, size)
 			}
 		} else if key.Type == Key_Type_Zset {
 			size, _ := c.Zsize(listKey)
+			res = append(res, []string{listKey, strconv.Itoa(int(size))})
 			fmt.Println(listKey, size)
 		}
 		count++

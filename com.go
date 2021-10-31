@@ -327,20 +327,11 @@ func ArrAsTableStyle(arr []string) string {
 	}
 	return s
 }
-func MapAsTableStyle(orderFields []string, m map[string]gossdb.Value) string {
-	vs := []string{}
+func MapAsArr(orderFields []string, m map[string]gossdb.Value) (vs []string) {
 	for _, f := range orderFields {
 		vs = append(vs, m[f].String())
 	}
-	s := ""
-	for i, v := range vs {
-		if i == len(vs)-1 {
-			s += v
-		} else {
-			s += v + "\t"
-		}
-	}
-	return s
+	return
 }
 
 func MapAsTableStyle2(orderFields []string, m map[string]interface{}) string {

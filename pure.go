@@ -5,11 +5,11 @@ import (
 	"strings"
 )
 
-func DoPure(cmd string) (ct int, e error) {
+func DoPure(cmd string) (ct int, e error, res [][]string) {
 	c, err := pool.NewClient()
 	if err != nil {
 		fmt.Println(err)
-		return 0, err
+		return 0, err, res
 	}
 	c.Close()
 
@@ -30,7 +30,7 @@ func DoPure(cmd string) (ct int, e error) {
 	resps, err := c.Do(arr2...)
 	if err != nil {
 		fmt.Println(err)
-		return 0, err
+		return 0, err, res
 	}
 	l := len(resps)
 	if l == 1 {

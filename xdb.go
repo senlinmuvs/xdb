@@ -18,6 +18,7 @@ var (
 	file           string
 	xdbcmd         string
 	try            bool
+	pwd            string
 	host           string
 	port           int
 	targetHost     string
@@ -34,6 +35,7 @@ var (
 	dbMinPoolSize  int
 	dbMaxPoolSize  int
 	dbMaxWaitSize  int
+	dbAcq          int
 	nct            bool
 )
 
@@ -63,7 +65,10 @@ func init() {
 
 func main() {
 	flag.Parse()
+	exe()
+}
 
+func exe() {
 	if v {
 		fmt.Printf("xdb %s\n", version)
 	}
@@ -247,8 +252,7 @@ func parseXDB(cmd string) (xdbs []*XDB, err error) {
 	return xdbs, nil
 }
 
-func xdb(cmd string) {
-	count := 0
+func xdb(cmd string) (count int, res [][]string) {
 	xdbs, er := parseXDB(cmd)
 	if er != nil {
 		fmt.Println("parseXDB err:", er)
@@ -262,12 +266,12 @@ func xdb(cmd string) {
 		c := 0
 		cmd := strings.ToLower(xdb.Cmd)
 		if xdb.Pure {
-			c, er = DoPure(cmd)
+			c, er, res = DoPure(cmd)
 		} else {
 			if cmd == "cp" {
 				c, er = Copy(xdb)
 			} else if cmd == "find" {
-				c, er = Find(xdb)
+				c, er, res = Find(xdb)
 			} else if cmd == "del" {
 				c, er = Del(xdb)
 			} else if cmd == "set" {
@@ -289,6 +293,7 @@ func xdb(cmd string) {
 	if !nct {
 		fmt.Printf("xdb count: %d\n", count)
 	}
+	return
 }
 
 func usage() {
