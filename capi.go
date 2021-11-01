@@ -1,6 +1,10 @@
 package main
 
 import "C"
+import (
+	"fmt"
+	"strings"
+)
 
 //go build -buildmode=c-archive -o lib.a
 //go build -buildmode=c-shared -o lib.dylib
@@ -11,18 +15,22 @@ type ApiRes struct {
 }
 
 //export XdbInit
-func XdbInit(host_ *C.char, port_ *C.char, pwd_ *C.char,
-	minPoolSize_ *C.char, maxPoolSize_ *C.char,
-	maxWaitSize_ *C.char, acq_ *C.char) {
-	targetHost = C.GoString(host_)
-	targetPort = ToInt(C.GoString(port_))
-	pwd = C.GoString(pwd_)
-	dbMinPoolSize = ToInt(C.GoString(minPoolSize_))
-	dbMaxPoolSize = ToInt(C.GoString(maxPoolSize_))
-	dbMaxWaitSize = ToInt(C.GoString(maxWaitSize_))
-	dbAcq = ToInt(C.GoString(acq_))
-	// fmt.Println(host, port, pwd, minPoolSize, maxWaitSize, maxPoolSize, acq)
-	initSSDB()
+func XdbInit(params_ *C.char) *C.char {
+	params := C.GoString(params_)
+	arr := strings.Split(params, ",")
+	fmt.Println(C.GoString(params_))
+	targetHost = arr[0]
+	targetPort = ToInt(arr[1])
+	pwd = arr[2]
+	dbMinPoolSize = ToInt(arr[3])
+	dbMaxPoolSize = ToInt(arr[4])
+	dbMaxWaitSize = ToInt(arr[5])
+	dbAcq = ToInt(arr[6])
+	e := initSSDB()
+	if e != nil {
+		return C.CString(e.Error())
+	}
+	return C.CString("")
 }
 
 //export Xdb

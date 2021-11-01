@@ -68,7 +68,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void XdbInit(char* host_, char* port_, char* pwd_, char* minPoolSize_, char* maxPoolSize_, char* maxWaitSize_, char* acq_);
+extern char* XdbInit(char* params_);
 extern char* Xdb(char* buf);
 
 #ifdef __cplusplus
