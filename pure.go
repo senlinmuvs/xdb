@@ -43,7 +43,8 @@ func DoPure(cmd string) (ct int, e error, res [][]string) {
 	if cmdty == "hget" ||
 		cmdty == "hgetall" ||
 		cmdty == "zscan" ||
-		cmdty == "zrscan" {
+		cmdty == "zrscan" ||
+		cmdty == "scan" {
 		ct, res = printKVResp(resps)
 	} else {
 		ct, res = print(resps)
@@ -52,7 +53,7 @@ func DoPure(cmd string) (ct int, e error, res [][]string) {
 }
 
 func printKVResp(resps []string) (ct int, res [][]string) {
-	res = append(res, []string{"-", "-"})
+	res = append(res, []string{"key", "value"})
 	l := len(resps)
 	for i := 1; i < l-1; i += 2 {
 		k := resps[i]
