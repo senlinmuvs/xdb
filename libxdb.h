@@ -69,6 +69,7 @@ extern "C" {
 #endif
 
 extern char* XdbInit(char* params_);
+extern void XdbClose();
 extern char* Xdb(char* buf);
 
 #ifdef __cplusplus

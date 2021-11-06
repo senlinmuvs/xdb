@@ -27,3 +27,14 @@ func initSSDB0(h string, p int) (*gossdb.Connectors, error) {
 	})
 	return pool, err
 }
+
+func Close() {
+	if pool != nil {
+		pool.Close()
+		pool = nil
+	}
+	if targetPool != nil {
+		targetPool.Close()
+		targetPool = nil
+	}
+}

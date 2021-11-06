@@ -35,6 +35,8 @@ func DoPure(cmd string) (ct int, e error, res [][]string) {
 	l := len(resps)
 	if l == 1 {
 		fmt.Println(resps[0])
+		res = append(res, []string{"-"})
+		res = append(res, []string{resps[0]})
 		return
 	}
 
@@ -42,28 +44,32 @@ func DoPure(cmd string) (ct int, e error, res [][]string) {
 		cmdty == "hgetall" ||
 		cmdty == "zscan" ||
 		cmdty == "zrscan" {
-		ct = printKVResp(resps)
+		ct, res = printKVResp(resps)
 	} else {
-		ct = print(resps)
+		ct, res = print(resps)
 	}
 	return
 }
 
-func printKVResp(resps []string) (ct int) {
+func printKVResp(resps []string) (ct int, res [][]string) {
+	res = append(res, []string{"-", "-"})
 	l := len(resps)
 	for i := 1; i < l-1; i += 2 {
 		k := resps[i]
 		v := resps[i+1]
 		fmt.Println(k, v)
+		res = append(res, []string{k, v})
 		ct++
 	}
 	return
 }
 
-func print(resps []string) (ct int) {
+func print(resps []string) (ct int, res [][]string) {
+	res = append(res, []string{"-"})
 	l := len(resps)
 	for i := 1; i < l; i += 1 {
 		fmt.Println(resps[i])
+		res = append(res, []string{resps[i]})
 		ct++
 	}
 	return

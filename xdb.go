@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.3.0"
+	version = "1.3.1"
 )
 
 var (
@@ -252,10 +252,15 @@ func parseXDB(cmd string) (xdbs []*XDB, err error) {
 	return xdbs, nil
 }
 
-func xdb(cmd string) (count int, res [][]string) {
-	xdbs, er := parseXDB(cmd)
-	if er != nil {
-		fmt.Println("parseXDB err:", er)
+func xdb(cmd string) (count int, res [][]string, e error) {
+	if pool == nil {
+		e = fmt.Errorf("db connection is null")
+		return
+	}
+	var xdbs []*XDB
+	xdbs, e = parseXDB(cmd)
+	if e != nil {
+		fmt.Println("parseXDB err:", e)
 		return
 	}
 	for _, xdb := range xdbs {
@@ -266,26 +271,26 @@ func xdb(cmd string) (count int, res [][]string) {
 		c := 0
 		cmd := strings.ToLower(xdb.Cmd)
 		if xdb.Pure {
-			c, er, res = DoPure(cmd)
+			c, e, res = DoPure(cmd)
 		} else {
 			if cmd == "cp" {
-				c, er = Copy(xdb)
+				c, e = Copy(xdb)
 			} else if cmd == "find" {
-				c, er, res = Find(xdb)
+				c, e, res = Find(xdb)
 			} else if cmd == "del" {
-				c, er = Del(xdb)
+				c, e = Del(xdb)
 			} else if cmd == "set" {
-				c, er = Set(xdb)
+				c, e = Set(xdb)
 			} else if cmd == "hset" {
-				c, er = Hset(xdb)
+				c, e = Hset(xdb)
 			} else if cmd == "import" {
-				c, er = Import(xdb)
+				c, e = Import(xdb)
 			} else {
 				fmt.Println("WARN no cmd:", xdb.Cmd, xdb.Src, xdb.Target)
 			}
 		}
-		if er != nil {
-			fmt.Println(xdb.Cmd+" err:", er)
+		if e != nil {
+			fmt.Println(xdb.Cmd+" err:", e)
 			return
 		}
 		count += c
