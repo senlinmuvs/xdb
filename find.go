@@ -8,6 +8,8 @@ import (
 )
 
 //find h:user:%d|z:bk:@hrtBid:st:%d:pks %0|key,score
+//过滤条件是从key模板匹配的开始扫
+//TODO 有条件就直接先跳到符合条件的key处再开始扫
 func Find(xdb *XDB) (count int, res [][]string, err error) {
 	c, err := pool.NewClient()
 	if err != nil {
@@ -53,6 +55,9 @@ func Find(xdb *XDB) (count int, res [][]string, err error) {
 			}
 		} else if key.Type == Key_Type_Zset {
 			size, _ := c.Zsize(listKey)
+			if len(res) == 0 {
+				res = append(res, []string{"zsetkey", "count"})
+			}
 			res = append(res, []string{listKey, strconv.Itoa(int(size))})
 			fmt.Println(listKey, size)
 		}
