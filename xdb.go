@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.3.1"
+	version = "1.4.0"
 )
 
 var (
@@ -271,12 +271,12 @@ func xdb(cmd string) (count int, res [][]string, e error) {
 		c := 0
 		cmd := strings.ToLower(xdb.Cmd)
 		if xdb.Pure {
-			c, e, res = DoPure(cmd)
+			c, res, e = DoPure(cmd)
 		} else {
 			if cmd == "cp" {
 				c, e = Copy(xdb)
 			} else if cmd == "find" {
-				c, e, res = Find(xdb)
+				c, res, e = Find(xdb)
 			} else if cmd == "del" {
 				c, e = Del(xdb)
 			} else if cmd == "set" {
@@ -288,6 +288,9 @@ func xdb(cmd string) (count int, res [][]string, e error) {
 			} else {
 				fmt.Println("WARN no cmd:", xdb.Cmd, xdb.Src, xdb.Target)
 			}
+		}
+		if e != nil && e.Error() == "stop" {
+			e = nil
 		}
 		if e != nil {
 			fmt.Println(xdb.Cmd+" err:", e)

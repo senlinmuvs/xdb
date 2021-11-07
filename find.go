@@ -8,7 +8,7 @@ import (
 )
 
 //find h:user:%d|z:bk:@hrtBid:st:%d:pks %0|key,score
-func Find(xdb *XDB) (count int, err error, res [][]string) {
+func Find(xdb *XDB) (count int, res [][]string, err error) {
 	c, err := pool.NewClient()
 	if err != nil {
 		return
@@ -57,6 +57,13 @@ func Find(xdb *XDB) (count int, err error, res [][]string) {
 			fmt.Println(listKey, size)
 		}
 		count++
+		size := ToInt(xdb.Target)
+		if size > 0 {
+			if count >= size {
+				err = fmt.Errorf("stop")
+				return
+			}
+		}
 		return
 	})
 	return
