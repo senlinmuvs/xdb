@@ -45,10 +45,12 @@ func Find(xdb *XDB) (count int, res [][]string, err error) {
 					QuoteMap(kvs)
 				}
 				if count == 0 {
+					keys = append(keys, "___")
 					res = append(res, keys)
 					fmt.Println(ArrAsTableStyle(keys))
 				}
 				arr := MapAsArr(keys, kvs)
+				arr = append(arr, listKey) //hashkey
 				res = append(res, arr)
 				fmt.Println(ArrAsTableStyle(arr))
 			} else {

@@ -40,8 +40,7 @@ func DoPure(cmd string) (ct int, res [][]string, e error) {
 		return
 	}
 
-	if cmdty == "hget" ||
-		cmdty == "hgetall" ||
+	if cmdty == "hgetall" ||
 		cmdty == "zscan" ||
 		cmdty == "zrscan" ||
 		cmdty == "scan" {
