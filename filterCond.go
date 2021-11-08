@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/seefan/gossdb"
@@ -134,7 +135,10 @@ func (fc *FilterCond) FilterHash(c *gossdb.Client, xdb *XDB, listkey string) (b 
 	}
 	existsField, err := c.Hexists(listkey, fc.Field)
 	if err != nil {
-		return false, err
+		ind := strings.Index(err.Error(), "access ssdb error, code is [error]")
+		if ind < 0 {
+			return false, err
+		}
 	}
 	if existsField {
 		var v gossdb.Value
