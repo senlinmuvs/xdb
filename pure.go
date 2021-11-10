@@ -8,7 +8,9 @@ import (
 func DoPure(cmd string) (ct int, res [][]string, e error) {
 	c, err := pool.NewClient()
 	if err != nil {
-		fmt.Println(err)
+		if !silence {
+			fmt.Println(err)
+		}
 		return 0, res, err
 	}
 	c.Close()
@@ -29,12 +31,16 @@ func DoPure(cmd string) (ct int, res [][]string, e error) {
 	}
 	resps, err := c.Do(arr2...)
 	if err != nil {
-		fmt.Println(err)
+		if !silence {
+			fmt.Println(err)
+		}
 		return 0, res, err
 	}
 	l := len(resps)
 	if l == 1 {
-		fmt.Println(resps[0])
+		if !silence {
+			fmt.Println(resps[0])
+		}
 		res = append(res, []string{"-"})
 		res = append(res, []string{resps[0]})
 		return
@@ -57,7 +63,9 @@ func printKVResp(resps []string) (ct int, res [][]string) {
 	for i := 1; i < l-1; i += 2 {
 		k := resps[i]
 		v := resps[i+1]
-		fmt.Println(k, v)
+		if !silence {
+			fmt.Println(k, v)
+		}
 		res = append(res, []string{k, v})
 		ct++
 	}
@@ -68,7 +76,9 @@ func print(resps []string) (ct int, res [][]string) {
 	res = append(res, []string{"-"})
 	l := len(resps)
 	for i := 1; i < l; i += 1 {
-		fmt.Println(resps[i])
+		if !silence {
+			fmt.Println(resps[i])
+		}
 		res = append(res, []string{resps[i]})
 		ct++
 	}

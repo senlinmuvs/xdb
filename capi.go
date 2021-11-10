@@ -9,6 +9,7 @@ import (
 //go build -buildmode=c-shared -o lib.dylib
 
 type ApiRes struct {
+	Cost  int64      `json:"cost"`
 	Count int        `json:"count"`
 	Datas [][]string `json:"datas"`
 }
@@ -39,12 +40,16 @@ func XdbClose() {
 
 //export Xdb
 func Xdb(buf *C.char) *C.char {
+	silence = true
 	param := C.GoString(buf)
+	t0 := CurMills()
 	c, res, e := xdb(param)
 	if e != nil {
 		return C.CString(AppendJson("err", e.Error()))
 	}
-	apiRes := &ApiRes{c, res}
+	t1 := CurMills()
+	cost := t1 - t0
+	apiRes := &ApiRes{cost, c, res}
 	r := ObjToJsonStr(apiRes)
 	return C.CString(r)
 }

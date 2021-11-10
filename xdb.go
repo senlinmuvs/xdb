@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.4.2"
+	version = "1.5.0"
 )
 
 var (
@@ -37,6 +37,7 @@ var (
 	dbMaxWaitSize  int
 	dbAcq          int
 	nct            bool
+	silence        bool
 )
 
 func init() {
@@ -60,6 +61,7 @@ func init() {
 	flag.IntVar(&dbMinPoolSize, "dbmips", 5, "db MinPoolSize")
 	flag.IntVar(&dbMaxPoolSize, "dbmxps", 20, "db MaxPoolSize")
 	flag.IntVar(&dbMaxWaitSize, "dbmxws", 1000, "db MaxWaitSize")
+	flag.BoolVar(&silence, "si", false, "silence, no console print")
 	flag.Usage = usage
 }
 
@@ -299,7 +301,9 @@ func xdb(cmd string) (count int, res [][]string, e error) {
 		count += c
 	}
 	if !nct {
-		fmt.Printf("xdb count: %d\n", count)
+		if !silence {
+			fmt.Printf("xdb count: %d\n", count)
+		}
 	}
 	return
 }
