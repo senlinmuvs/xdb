@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.5.0"
+	version = "1.5.1"
 )
 
 var (
@@ -273,7 +273,7 @@ func xdb(cmd string) (count int, res [][]string, e error) {
 		c := 0
 		cmd := strings.ToLower(xdb.Cmd)
 		if xdb.Pure {
-			c, res, e = DoPure(cmd)
+			c, res, e = DoPure(xdb.Cmd)
 		} else {
 			if cmd == "cp" {
 				c, e = Copy(xdb)
