@@ -1,6 +1,9 @@
 # XDB
 # 像操作关系数据库一样操作kv数据库
 批量查改删数据工具。支持连key（类似连表），条件查询，字段选择。KV转关系必然有性能损失的，适合离线数据管理,批量处理用。
+
+[图形界面工具xdbgui](https://github.com/senlinmuvs/xdbgui)
+
 ```
 sen@x:/mnt/c/code/go/xdb$ xdb -x "find h:user:%d{id(0,100000011)}(id,ut)"
 id      ut
