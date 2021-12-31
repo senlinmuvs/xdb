@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.5.1"
+	version = "1.5.2"
 )
 
 var (
@@ -38,6 +38,7 @@ var (
 	dbAcq          int
 	nct            bool
 	silence        bool
+	test           bool
 )
 
 func init() {
@@ -62,12 +63,33 @@ func init() {
 	flag.IntVar(&dbMaxPoolSize, "dbmxps", 20, "db MaxPoolSize")
 	flag.IntVar(&dbMaxWaitSize, "dbmxws", 1000, "db MaxWaitSize")
 	flag.BoolVar(&silence, "si", false, "silence, no console print")
+	flag.BoolVar(&test, "test", false, "test")
 	flag.Usage = usage
 }
 
 func main() {
 	flag.Parse()
-	exe()
+	if test {
+		exeTest()
+	} else {
+		exe()
+	}
+}
+
+func exeTest() {
+	// cmd := `/hset h:pk:100058751 cont "FU友 ''sdf ''' 要顶戴"`
+	cmd := `/hset h:pk:100058751 cont 'FU友 "sdf """ 要顶戴'`
+	arr := parseParams(cmd, true)
+	fmt.Println(cmd)
+	le := len(arr)
+	for i, p := range arr {
+		if i == le-1 {
+			fmt.Println(p)
+		} else {
+			fmt.Print(p + ", ")
+		}
+	}
+	fmt.Println(len(arr))
 }
 
 func exe() {

@@ -300,3 +300,18 @@ func IsMail(s string) bool {
 func IsFile(s string) bool {
 	return strings.Index(s, "file://") == 0
 }
+
+func Unquote(s string) string {
+	le := len(s)
+	if le < 2 {
+		return s
+	}
+	if string(s[0]) == "\"" && string(s[le-1]) == "\"" {
+		s = s[1 : le-1]
+		s = strings.ReplaceAll(s, "\\\"", "\"")
+	} else if string(s[0]) == "'" && string(s[le-1]) == "'" {
+		s = s[1 : le-1]
+		s = strings.ReplaceAll(s, "\\'", "'")
+	}
+	return s
+}
