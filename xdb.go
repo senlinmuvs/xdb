@@ -79,6 +79,7 @@ func main() {
 func exeTest() {
 	// cmd := `/hset h:pk:100058751 cont "FU友 ''sdf ''' 要顶戴"`
 	cmd := `/hset h:pk:100058751 cont 'FU友 "sdf """ 要顶戴'`
+	// cmd := `/hlist - - 10`
 	arr := parseParams(cmd, true)
 	fmt.Println(cmd)
 	le := len(arr)

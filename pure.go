@@ -74,6 +74,9 @@ func parseParams(cmd string, unquote bool) (arr []string) {
 		arr = strings.Split(cmd, " ")
 		return
 	}
+	if len(param) > 0 {
+		arr = append(arr, strings.Trim(param, " "))
+	}
 	return
 }
 func DoPure(cmd string) (ct int, res [][]string, e error) {
