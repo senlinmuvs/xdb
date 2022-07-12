@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version = "1.5.2"
+	version = "1.6.0"
 )
 
 var (
@@ -39,6 +39,7 @@ var (
 	nct            bool
 	silence        bool
 	test           bool
+	no___          bool
 )
 
 func init() {
@@ -64,6 +65,7 @@ func init() {
 	flag.IntVar(&dbMaxWaitSize, "dbmxws", 1000, "db MaxWaitSize")
 	flag.BoolVar(&silence, "si", false, "silence, no console print")
 	flag.BoolVar(&test, "test", false, "test")
+	flag.BoolVar(&no___, "no___", false, "do not print ___ column")
 	flag.Usage = usage
 }
 
