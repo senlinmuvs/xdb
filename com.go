@@ -115,6 +115,15 @@ func zscan(c *gossdb.Client, zkey string, cb ZscanCB) error {
 	return nil
 }
 
+func existsKey(c *gossdb.Client, k string) bool {
+	b, e := c.Exists(k)
+	if e != nil {
+		fmt.Println("err", e)
+		return false
+	}
+	return b
+}
+
 func ssdbList(c *gossdb.Client, key *Key, fromKey, endKey string, batch int) (keys []string, err error) {
 	if slow > 0 {
 		time.Sleep(time.Duration(slow) * time.Second)
@@ -139,7 +148,10 @@ func ssdbList(c *gossdb.Client, key *Key, fromKey, endKey string, batch int) (ke
 //zlist/hlist遍历所有某前缀的key找到匹配模板执行回调
 func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb ListCB) (err error) {
 	if keyPre == keyTpl {
-		fromKey = LeftUnicode(keyPre, len(keyPre)-1)
+		if existsKey(c, keyPre) {
+			cb(keyPre, fromKey)
+		}
+		return
 	}
 	if fromKey == "" {
 		fromKey = keyPre
@@ -151,9 +163,8 @@ func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb L
 	} else {
 		bat = 1
 	}
-	key := xdb.GetCurKey()
-	//
 	total := 0
+	key := xdb.GetCurKey()
 a:
 	for {
 		var keys []string
