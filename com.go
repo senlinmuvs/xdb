@@ -115,15 +115,6 @@ func zscan(c *gossdb.Client, zkey string, cb ZscanCB) error {
 	return nil
 }
 
-func existsKey(c *gossdb.Client, k string) bool {
-	b, e := c.Exists(k)
-	if e != nil {
-		fmt.Println("err", e)
-		return false
-	}
-	return b
-}
-
 func ssdbList(c *gossdb.Client, key *Key, fromKey, endKey string, batch int) (keys []string, err error) {
 	if slow > 0 {
 		time.Sleep(time.Duration(slow) * time.Second)
@@ -136,7 +127,12 @@ func ssdbList(c *gossdb.Client, key *Key, fromKey, endKey string, batch int) (ke
 	} else if key.Type == Key_Type_Zset {
 		keys, err = c.Zlist(fromKey, "", int64(batch))
 		if debug {
-			fmt.Printf("[zlist %s %d] res %d\n", fromKey, batch, len(keys))
+			le := len(keys)
+			first := ""
+			if le > 0 {
+				first = keys[0]
+			}
+			fmt.Printf("[zlist %s %d] res %d %s\n", fromKey, batch, le, first)
 		}
 	} else {
 		keys, err = c.Keys(fromKey, "", int64(batch))
@@ -148,10 +144,7 @@ func ssdbList(c *gossdb.Client, key *Key, fromKey, endKey string, batch int) (ke
 //zlist/hlist遍历所有某前缀的key找到匹配模板执行回调
 func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb ListCB) (err error) {
 	if keyPre == keyTpl {
-		if existsKey(c, keyPre) {
-			cb(keyPre, fromKey)
-		}
-		return
+		fromKey = LeftUnicode(keyPre, len(keyPre)-1) //-1是为了当keyPre=keyTpl时list能找到这个key
 	}
 	if fromKey == "" {
 		fromKey = keyPre
@@ -163,8 +156,9 @@ func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb L
 	} else {
 		bat = 1
 	}
-	total := 0
 	key := xdb.GetCurKey()
+	//
+	total := 0
 a:
 	for {
 		var keys []string
@@ -182,6 +176,7 @@ a:
 			total++
 			//
 			i := strings.Index(listKey, keyPre)
+			// fmt.Println(">>>>>>>>>>>>", listKey, keyPre, i)
 			if i != 0 {
 				// if debug {
 				// 	fmt.Printf("stop %s %s %s\n", keyTpl, listKey, keyPre)
@@ -209,6 +204,9 @@ a:
 //z:bk:100000003:st:%d:pks -> z:bk:100000003:st:1:pks	匹配
 //z:bk:100000003:st:%d:pks -> z:bk:100000004:st:1:pks	不匹配
 func matchKey(keytpl, k string) bool {
+	if keytpl == k {
+		return true
+	}
 	arr1 := strings.Split(keytpl, ":")
 	arr2 := strings.Split(k, ":")
 	if len(arr1) != len(arr2) {
