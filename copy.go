@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/seefan/gossdb"
+)
+
 //cp h:user:%d|z:bk:@hrtBid:st:%d:pks z:user:%0:hrtpks:by:lst
 func Copy(xdb *XDB) (count int, err error) {
 	c, err := pool.NewClient()
@@ -8,7 +12,7 @@ func Copy(xdb *XDB) (count int, err error) {
 	}
 	defer c.Close()
 	//
-	targetClient := c
+	var targetClient *gossdb.Client
 	if targetPool != nil {
 		targetClient, err = targetPool.NewClient()
 		if err != nil {
@@ -18,7 +22,7 @@ func Copy(xdb *XDB) (count int, err error) {
 	}
 
 	find0(c, xdb, func(listKey string, datas map[string]interface{}) (err error) {
-		err = xdb.WriteToTarget(targetClient, xdb, listKey, datas)
+		err = xdb.WriteToTarget(c, targetClient, listKey, datas)
 		if err != nil {
 			return
 		}

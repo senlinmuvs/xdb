@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/seefan/gossdb"
 )
 
 const (
-	version = "1.6.1"
+	version = "1.7.0"
 )
 
 var (
@@ -188,22 +189,70 @@ func (x *XDB) FillTargetVal() (s string, err error) {
 	return
 }
 
-func (x *XDB) WriteToTarget(c *gossdb.Client, xdb *XDB, listKey string, datas map[string]interface{}) (err error) {
-	var tar string
-	tar, err = xdb.FillTargetVal()
+func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey string, datas map[string]interface{}) (err error) {
+	if targetClient == nil {
+		targetClient = srcClient
+	}
+	tar := fillTplParams(x.Src, listKey, replacePlah(x.Target))
 	if x.TarKey.Type == Key_Type_Zset {
 		if len(datas) > 1 {
 			k := datas[Symbol_ZsetKey]
 			s := datas[Symbol_ZsetScore]
 			fmt.Println("zset", tar, k, s)
 			if !try {
-				err = c.Zset(tar, k.(string), s.(int64))
+				err = targetClient.Zset(tar, k.(string), s.(int64))
 			}
 		} else {
-			err = fmt.Errorf("WriteToTarget found zset val error params %s", ObjToJsonStr(datas))
+			fromKey := ""
+			var fromScore interface{} = ""
+			for {
+				keys, vals, e := srcClient.Zscan(listKey, fromKey, fromScore, "", 100)
+				if debug {
+					fmt.Println("src: zscan", listKey, fromKey, fromScore, len(keys), len(vals))
+				}
+				if e != nil {
+					err = e
+					return
+				}
+				l := len(keys)
+				if l == 0 {
+					break
+				}
+				for i, k := range keys {
+					v := vals[i]
+					fmt.Println("tar: zset", tar, k, v)
+					if !try {
+						err = targetClient.Zset(tar, k, v)
+						if err != nil {
+							return
+						}
+					}
+				}
+				fromKey = keys[l-1]
+				fromScore = vals[l-1]
+			}
 		}
 	} else if x.TarKey.Type == Key_Type_Hash {
+		kvs, e := srcClient.HgetAll(listKey)
+		if e != nil {
+			err = e
+			return
+		}
+		fmt.Println("tar: multi_set", tar, "kvs["+strconv.Itoa(len(kvs))+"]")
+		if !try {
+			kvs_ := ConvMapValue(kvs)
+			err = targetClient.MultiHset(tar, kvs_)
+		}
 	} else if x.TarKey.Type == Key_Type_KV {
+		v, e := srcClient.Get(listKey)
+		if e != nil {
+			err = e
+			return
+		}
+		fmt.Println("tar: set", tar, v.String())
+		if !try {
+			err = targetClient.Set(tar, v.String())
+		}
 	}
 	return
 }

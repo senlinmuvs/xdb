@@ -141,10 +141,41 @@ func ssdbList(c *gossdb.Client, key *Key, fromKey, endKey string, batch int) (ke
 	return
 }
 
+func existsKey(c *gossdb.Client, key *Key, k string) bool {
+	if key.Type == Key_Type_KV {
+		b, e := c.Exists(k)
+		if e != nil {
+			fmt.Println("existsKey err", e)
+			return false
+		}
+		return b
+	} else if key.Type == Key_Type_Hash {
+		v, e := c.Hsize(k)
+		if e != nil {
+			fmt.Println("existsKey err", e)
+			return false
+		}
+		return v > 0
+	} else if key.Type == Key_Type_Zset {
+		v, e := c.Zsize(k)
+		if e != nil {
+			fmt.Println("existsKey err", e)
+			return false
+		}
+		return v > 0
+	}
+	return false
+}
+
 //zlist/hlist遍历所有某前缀的key找到匹配模板执行回调
 func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb ListCB) (err error) {
-	if keyPre == keyTpl {
-		fromKey = LeftUnicode(keyPre, len(keyPre)-1) //-1是为了当keyPre=keyTpl时list能找到这个key
+	key := xdb.GetCurKey()
+	if keyPre == keyTpl { //固定key,非模板
+		// fromKey = LeftUnicode(keyPre, len(keyPre)-1) //-1是为了当keyPre=keyTpl时list能找到这个key
+		if existsKey(c, key, keyPre) {
+			cb(keyPre, fromKey)
+		}
+		return
 	}
 	if fromKey == "" {
 		fromKey = keyPre
@@ -156,7 +187,6 @@ func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb L
 	} else {
 		bat = 1
 	}
-	key := xdb.GetCurKey()
 	//
 	total := 0
 a:
@@ -244,6 +274,19 @@ func findPos(s string, x int) int {
 		}
 	}
 	return -1
+}
+
+//z:x:%d:%s -> z:x:%0:%1
+func replacePlah(k string) (kk string) {
+	j := 0
+	for i, c := range k {
+		if i > 0 && k[i-1] == '%' && (c == 'd' || c == 's') {
+			kk += strconv.Itoa(j)
+		} else {
+			kk += string(c)
+		}
+	}
+	return
 }
 
 /*
@@ -382,4 +425,12 @@ func QuoteMap(m map[string]gossdb.Value) {
 	for k, v := range m {
 		m[k] = gossdb.Value(strconv.Quote(v.String()))
 	}
+}
+
+func ConvMapValue(m map[string]gossdb.Value) (mm map[string]interface{}) {
+	mm = map[string]interface{}{}
+	for k, v := range m {
+		mm[k] = v.String() //TODO all type string
+	}
+	return
 }
