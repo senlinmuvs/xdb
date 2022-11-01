@@ -48,6 +48,12 @@ find h:pk:%s{%0/[^\d]+/}
 ## cp
 #### cp 复制的源key  复制的目标key
 ```
+
+复制数据到另一个库
+cp -p 8888 -p2 8889 z:user:%d z:user:%d
+
+------------------------------------------
+
 先查找以h:user:开头的hash，把查找到的每条hash的hrtBid值填入后面的z:bk:@hrtBid:st:%d:pks再查找并把找到的zset数据复制到目标key中。
 目标key中%0是引用源key上第0个点位符的值，所以这里是每个h:user:%d的%d对应值，即uid。
 cp h:user:%d|z:bk:@hrtBid:st:%d:pks z:user:%0:hrtpks:by:lst
