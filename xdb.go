@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	version = "1.7.0"
+	version = "1.7.1"
 )
 
 var (
@@ -189,7 +189,7 @@ func (x *XDB) FillTargetVal() (s string, err error) {
 	return
 }
 
-func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey string, datas map[string]interface{}) (err error) {
+func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey string, datas map[string]interface{}) (c int, err error) {
 	if targetClient == nil {
 		targetClient = srcClient
 	}
@@ -202,6 +202,7 @@ func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey stri
 			if !try {
 				err = targetClient.Zset(tar, k.(string), s.(int64))
 			}
+			c++
 		} else {
 			fromKey := ""
 			var fromScore interface{} = ""
@@ -227,6 +228,7 @@ func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey stri
 							return
 						}
 					}
+					c++
 				}
 				fromKey = keys[l-1]
 				fromScore = vals[l-1]
@@ -243,6 +245,7 @@ func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey stri
 			kvs_ := ConvMapValue(kvs)
 			err = targetClient.MultiHset(tar, kvs_)
 		}
+		c++
 	} else if x.TarKey.Type == Key_Type_KV {
 		v, e := srcClient.Get(listKey)
 		if e != nil {
@@ -253,6 +256,7 @@ func (x *XDB) WriteToTarget(srcClient, targetClient *gossdb.Client, listKey stri
 		if !try {
 			err = targetClient.Set(tar, v.String())
 		}
+		c++
 	}
 	return
 }

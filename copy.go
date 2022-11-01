@@ -22,11 +22,12 @@ func Copy(xdb *XDB) (count int, err error) {
 	}
 
 	find0(c, xdb, func(listKey string, datas map[string]interface{}) (err error) {
-		err = xdb.WriteToTarget(c, targetClient, listKey, datas)
-		if err != nil {
+		co, e := xdb.WriteToTarget(c, targetClient, listKey, datas)
+		if e != nil {
+			err = e
 			return
 		}
-		count++
+		count += co
 		return
 	})
 	return
