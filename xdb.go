@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -10,7 +12,7 @@ import (
 )
 
 const (
-	version = "1.7.1"
+	version = "1.8.0"
 )
 
 var (
@@ -41,6 +43,8 @@ var (
 	silence        bool
 	test           bool
 	no___          bool
+	input          string
+	inputSep       string
 )
 
 func init() {
@@ -67,10 +71,19 @@ func init() {
 	flag.BoolVar(&silence, "si", false, "silence, no console print")
 	flag.BoolVar(&test, "test", false, "test")
 	flag.BoolVar(&no___, "no___", false, "do not print ___ column")
+	flag.StringVar(&inputSep, "is", "\t", "pipe input separeator")
 	flag.Usage = usage
 }
 
 func main() {
+	fileInfo, _ := os.Stdin.Stat()
+	if (fileInfo.Mode() & os.ModeNamedPipe) == os.ModeNamedPipe {
+		s := bufio.NewScanner(os.Stdin)
+		for s.Scan() {
+			input += s.Text() + "\n"
+		}
+	}
+
 	flag.Parse()
 	if test {
 		exeTest()

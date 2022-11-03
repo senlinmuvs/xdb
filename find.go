@@ -95,6 +95,15 @@ func Find(xdb *XDB) (count int, res [][]string, err error) {
 func find0(c *gossdb.Client, xdb *XDB, cb FindCB) (err error) {
 	keys := xdb.SrcKeys
 	keysLen := len(keys)
+
+	if input != "" {
+		lines := Split(input, "\n")
+		for _, line := range lines {
+			k := FillKeyTplByInput(line, xdb.GetCurKey().KeyTpl)
+			cb(k, nil)
+		}
+		return
+	}
 x:
 	for {
 		if xdb.CurKeyIndex < 0 || xdb.CurKeyIndex > keysLen {

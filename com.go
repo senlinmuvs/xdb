@@ -355,6 +355,17 @@ func FillPlahByArr(keyParts []string, arr []string) []string {
 	}
 	return keyParts
 }
+func FillKeyTplByInput(line, tpl string) (k string) {
+	k = tpl
+	arr := Split(line, inputSep)
+	for _, a := range arr {
+		i := strings.Index(k, "%")
+		if i >= 0 {
+			k = LeftUnicode(k, i) + a + RightUnicode(k, i+2+len(a))
+		}
+	}
+	return
+}
 
 func PartsToKey(arr []string) string {
 	s := ""
@@ -366,6 +377,10 @@ func PartsToKey(arr []string) string {
 		}
 	}
 	return s
+}
+
+func IsTpl(k string) bool {
+	return strings.Contains(k, "%d") || strings.Contains(k, "%s")
 }
 
 func ArrAsTableStyle(arr []string) string {
