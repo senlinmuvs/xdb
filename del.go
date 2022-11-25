@@ -33,7 +33,10 @@ func del0(c *gossdb.Client, xdb *XDB, listKey string, datas map[string]interface
 				c.Hclear(listKey)
 			}
 		} else {
-			//TODO del fields
+			fmt.Println("multi_hdel", listKey, key.GetSelectorsStr())
+			if !try {
+				c.MultiHdel(listKey, key.GetSelectorsArr()...)
+			}
 		}
 	} else if key.Type == Key_Type_KV {
 		fmt.Println("del", listKey)

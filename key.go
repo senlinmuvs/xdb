@@ -17,9 +17,9 @@ type Ref struct {
 	SelFields []string //引用后取得的值的哪些字段(tag)
 }
 
-//查询：选取的字段(uid,st)
-//更新：选取的字段+更新值(uid=1,tag=h:tag:%d@name)
-//up h:pk:%d(tags=h:tag:@tids(tag))
+// 查询：选取的字段(uid,st)
+// 更新：选取的字段+更新值(uid=1,tag=h:tag:%d@name)
+// up h:pk:%d(tags=h:tag:@tids(tag))
 type Selector struct {
 	Field string //tags
 	Ref   *Ref   //h:tag:@tids(tag)
@@ -39,7 +39,7 @@ type Key struct {
 	Selectors []*Selector
 }
 
-//copy h:user:%d|z:bk:@hrtBid:st:%d:pks z:user:%0:hrtpks:by:lst
+// copy h:user:%d|z:bk:@hrtBid:st:%d:pks z:user:%0:hrtpks:by:lst
 func parseKeys(s string) (keys []*Key, err error) {
 	keys = []*Key{}
 	arr := Split(s, Symbol_Pipe)
@@ -92,9 +92,9 @@ func (k *Key) FillPlahValByArr(arr []string) string {
 	return PartsToKey(FillPlahByArr(ps, arr))
 }
 
-//设置引用值
-//preKey 前导key
-//listKey 前导key,findTpl的listKey
+// 设置引用值
+// preKey 前导key
+// listKey 前导key,findTpl的listKey
 func (k *Key) SetRefVals(c *gossdb.Client, preKey *Key, listKey string) bool {
 	for _, ref := range k.Refs {
 		ref.setRefVal(c, preKey, listKey)
@@ -122,7 +122,21 @@ func (k *Key) ToStr() string {
 	return s
 }
 
-//当key回退时清除上一轮扫描产生的临时数据
+func (k *Key) GetSelectorsStr() (keys string) {
+	for _, sel := range k.Selectors {
+		keys += sel.Field + " "
+	}
+	return
+}
+
+func (k *Key) GetSelectorsArr() (keys []string) {
+	for _, sel := range k.Selectors {
+		keys = append(keys, sel.Field)
+	}
+	return
+}
+
+// 当key回退时清除上一轮扫描产生的临时数据
 func (k *Key) ClearTempData() {
 	k.FromKey = ""
 	k.KeyTpl = k.Key
@@ -140,8 +154,8 @@ func (k *Key) Fields() []string {
 
 ////////////////////////////////////////////////////////////
 
-//Ref
-///////////////////////////////////////////////////////////
+// Ref
+// /////////////////////////////////////////////////////////
 func (r *Ref) setRefVal(c *gossdb.Client, preKey *Key, listKey string) (e error) {
 	var v gossdb.Value
 	if r.Type == Data_Type_Field {

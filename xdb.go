@@ -127,8 +127,8 @@ func exe() {
 	}
 }
 
-//XDB
-///////////////////////////////////////////////////////////
+// XDB
+// /////////////////////////////////////////////////////////
 type XDB struct {
 	Cmd         string
 	Src         string
@@ -143,7 +143,7 @@ func (x *XDB) GetCurKey() *Key {
 	return x.SrcKeys[x.CurKeyIndex]
 }
 
-//获取前导key
+// 获取前导key
 func (x *XDB) GetLeadKey() *Key {
 	if x.CurKeyIndex-1 >= len(x.SrcKeys) {
 		return nil
@@ -285,7 +285,7 @@ func (x *XDB) Stat() {
 	}
 }
 
-///////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////
 func parseXDB(cmd string) (xdbs []*XDB, err error) {
 	lines := []string{}
 	if cmd == "" {
