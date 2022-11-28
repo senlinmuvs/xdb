@@ -25,7 +25,11 @@ func Find(xdb *XDB) (count int, res [][]string, err error) {
 			v, _ := c.Get(listKey)
 			ttl, _ := c.Ttl(listKey)
 			if !silence {
-				fmt.Println(listKey, v.String(), ttl)
+				if printBytes {
+					fmt.Println(listKey, v.String(), ttl, len(v.Bytes()))
+				} else {
+					fmt.Println(listKey, v.String(), ttl)
+				}
 			}
 		} else if key.Type == Key_Type_Hash {
 			size, _ := c.Hsize(listKey)
@@ -66,7 +70,15 @@ func Find(xdb *XDB) (count int, res [][]string, err error) {
 			} else {
 				res = append(res, []string{listKey, strconv.Itoa(int(size))})
 				if !silence {
-					fmt.Println(listKey, size)
+					if printBytes {
+						m, e := c.HgetAll(listKey)
+						if e != nil {
+							panic(fmt.Errorf("find0 hgetall %s err %s", listKey, e.Error()))
+						}
+						fmt.Println(listKey, size, CountMapValueBytes(m))
+					} else {
+						fmt.Println(listKey, size)
+					}
 				}
 			}
 		} else if key.Type == Key_Type_Zset {

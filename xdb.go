@@ -21,6 +21,7 @@ var (
 	file           string
 	xdbcmd         string
 	try            bool
+	printBytes     bool
 	pwd            string
 	host           string
 	port           int
@@ -55,6 +56,7 @@ func init() {
 	flag.StringVar(&file, "f", "", "xdb file")
 	flag.StringVar(&xdbcmd, "x", "", "xdb cmd")
 	flag.BoolVar(&try, "try", false, "try correct, just print log")
+	flag.BoolVar(&printBytes, "b", false, "print bytes")
 	flag.StringVar(&host, "h", "localhost", "ssdb host")
 	flag.IntVar(&port, "p", 8888, "ssdb port")
 	flag.StringVar(&targetHost, "h2", "localhost", "ssdb target host")

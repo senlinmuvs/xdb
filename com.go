@@ -167,7 +167,7 @@ func existsKey(c *gossdb.Client, key *Key, k string) bool {
 	return false
 }
 
-//zlist/hlist遍历所有某前缀的key找到匹配模板执行回调
+// zlist/hlist遍历所有某前缀的key找到匹配模板执行回调
 func findKeyTpl(c *gossdb.Client, xdb *XDB, keyPre, keyTpl, fromKey string, cb ListCB) (err error) {
 	key := xdb.GetCurKey()
 	if keyPre == keyTpl { //固定key,非模板
@@ -446,6 +446,13 @@ func ConvMapValue(m map[string]gossdb.Value) (mm map[string]interface{}) {
 	mm = map[string]interface{}{}
 	for k, v := range m {
 		mm[k] = v.String() //TODO all type string
+	}
+	return
+}
+
+func CountMapValueBytes(m map[string]gossdb.Value) (c int) {
+	for _, v := range m {
+		c += len(v.Bytes())
 	}
 	return
 }
