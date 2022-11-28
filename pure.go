@@ -6,76 +6,86 @@ import (
 )
 
 func parseParams(cmd string, unquote bool) (arr []string) {
-	param := ""
-	firstQuote := 0
-	quote1Num := 0
-	quote2Num := 0
-	for i, c := range cmd {
-		s := string(c)
-		param += s
-		if s == "\"" {
-			if i > 0 {
-				if string(cmd[i-1]) != "\\" {
+	n := 1
+	if inputLines != nil {
+		n = len(inputLines)
+	}
+	for i := 0; i < n; i++ {
+		curCmd := cmd
+		if inputLines != nil {
+			curCmd = FillKeyTplByInput(inputLines[i], cmd)
+		}
+		param := ""
+		firstQuote := 0
+		quote1Num := 0
+		quote2Num := 0
+		for i, c := range curCmd {
+			s := string(c)
+			param += s
+			if s == "\"" {
+				if i > 0 {
+					if string(curCmd[i-1]) != "\\" {
+						quote1Num = quote1Num + 1
+					}
+				} else {
 					quote1Num = quote1Num + 1
 				}
-			} else {
-				quote1Num = quote1Num + 1
+				if firstQuote == 0 {
+					firstQuote = 1
+				}
 			}
-			if firstQuote == 0 {
-				firstQuote = 1
-			}
-		}
-		if s == "'" {
-			if i > 0 {
-				if string(cmd[i-1]) != "\\" {
+			if s == "'" {
+				if i > 0 {
+					if string(curCmd[i-1]) != "\\" {
+						quote2Num = quote2Num + 1
+					}
+				} else {
 					quote2Num = quote2Num + 1
 				}
-			} else {
-				quote2Num = quote2Num + 1
-			}
-			if firstQuote == 0 {
-				firstQuote = 2
-			}
-		}
-		if quote1Num == 2 {
-			if firstQuote == 1 {
-				if unquote {
-					param = Unquote(strings.Trim(param, " "))
-				} else {
-					param = strings.Trim(param, " ")
+				if firstQuote == 0 {
+					firstQuote = 2
 				}
-				arr = append(arr, param)
-				param = ""
-				firstQuote = 0
 			}
-			quote1Num = 0
-		}
-		if quote2Num == 2 {
-			if firstQuote == 2 {
-				if unquote {
-					param = Unquote(strings.Trim(param, " "))
-				} else {
-					param = strings.Trim(param, " ")
+			if quote1Num == 2 {
+				if firstQuote == 1 {
+					if unquote {
+						param = Unquote(strings.Trim(param, " "))
+					} else {
+						param = strings.Trim(param, " ")
+					}
+					arr = append(arr, param)
+					param = ""
+					firstQuote = 0
 				}
-				arr = append(arr, param)
-				param = ""
-				firstQuote = 0
+				quote1Num = 0
 			}
-			quote2Num = 0
+			if quote2Num == 2 {
+				if firstQuote == 2 {
+					if unquote {
+						param = Unquote(strings.Trim(param, " "))
+					} else {
+						param = strings.Trim(param, " ")
+					}
+					arr = append(arr, param)
+					param = ""
+					firstQuote = 0
+				}
+				quote2Num = 0
+			}
+			if quote1Num == 0 && quote2Num == 0 && s == " " {
+				arr = append(arr, strings.Trim(param, " "))
+				param = ""
+			}
 		}
-		if quote1Num == 0 && quote2Num == 0 && s == " " {
+		if (firstQuote == 1 && (quote1Num > 0 && quote1Num < 2)) ||
+			(firstQuote == 2 && quote2Num > 0 && quote2Num < 2) {
+			fmt.Println("quote error")
+			arr = strings.Split(curCmd, " ")
+			return
+		}
+		if len(param) > 0 {
 			arr = append(arr, strings.Trim(param, " "))
-			param = ""
 		}
-	}
-	if (firstQuote == 1 && (quote1Num > 0 && quote1Num < 2)) ||
-		(firstQuote == 2 && quote2Num > 0 && quote2Num < 2) {
-		fmt.Println("quote error")
-		arr = strings.Split(cmd, " ")
-		return
-	}
-	if len(param) > 0 {
-		arr = append(arr, strings.Trim(param, " "))
 	}
 	return
 }

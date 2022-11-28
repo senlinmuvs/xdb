@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	version = "1.9.0"
+	version = "1.10.0"
 )
 
 var (
@@ -45,6 +45,8 @@ var (
 	no___          bool
 	input          string
 	inputSep       string
+	//
+	inputLines []string
 )
 
 func init() {
@@ -81,6 +83,9 @@ func main() {
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
 			input += s.Text() + "\n"
+		}
+		if input != "" {
+			inputLines = Split(input, "\n")
 		}
 	}
 

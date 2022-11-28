@@ -7,11 +7,11 @@ import (
 	"github.com/seefan/gossdb"
 )
 
-//find h:user:%d|z:bk:@hrtBid:st:%d:pks %0|key,score
-//过滤条件是从key模板匹配的开始扫
-//TODO 有条件就直接先跳到符合条件的key处再开始扫 - 只有当条件是key中的占位符时才能这样,且点位符必须从第一个开始填
-//find h:pobi:%d{id(10000005,)}(id,name,tags,ct,lst) 1
-//fromKey = h:pobi:10000005
+// find h:user:%d|z:bk:@hrtBid:st:%d:pks %0|key,score
+// 过滤条件是从key模板匹配的开始扫
+// TODO 有条件就直接先跳到符合条件的key处再开始扫 - 只有当条件是key中的占位符时才能这样,且点位符必须从第一个开始填
+// find h:pobi:%d{id(10000005,)}(id,name,tags,ct,lst) 1
+// fromKey = h:pobi:10000005
 func Find(xdb *XDB) (count int, res [][]string, err error) {
 	c, err := pool.NewClient()
 	if err != nil {
@@ -96,9 +96,8 @@ func find0(c *gossdb.Client, xdb *XDB, cb FindCB) (err error) {
 	keys := xdb.SrcKeys
 	keysLen := len(keys)
 
-	if input != "" {
-		lines := Split(input, "\n")
-		for _, line := range lines {
+	if inputLines != nil {
+		for _, line := range inputLines {
 			k := FillKeyTplByInput(line, xdb.GetCurKey().KeyTpl)
 			cb(k, nil)
 		}
