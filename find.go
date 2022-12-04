@@ -65,7 +65,11 @@ func Find(xdb *XDB) (count int, res [][]string, err error) {
 				}
 				res = append(res, arr)
 				if !silence {
-					fmt.Println(ArrAsTableStyle(arr))
+					if printBytes {
+						fmt.Println(listKey, size, CountMapValueBytes(kvs))
+					} else {
+						fmt.Println(ArrAsTableStyle(arr))
+					}
 				}
 			} else {
 				res = append(res, []string{listKey, strconv.Itoa(int(size))})
